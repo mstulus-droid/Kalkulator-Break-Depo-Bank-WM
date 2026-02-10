@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Break Deposito - Bank WM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        /* Animasi */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Theme Colors */
+        .bg-navy-gradient {
+            background: linear-gradient(135deg, #020617 0%, #1e3a8a 100%);
+        }
+
+        /* Input Styles */
+        .concave-input {
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+            border: 1px solid #cbd5e1;
+            background-color: #f8fafc;
+        }
+
+        .concave-input:focus {
+            box-shadow: inset 1px 1px 3px rgba(30, 58, 138, 0.1);
+            border-color: #2563eb;
+            background-color: #ffffff;
+        }
+
+        /* Button Styles */
+        .emboss-btn {
+            background: linear-gradient(145deg, #2563eb, #1e3a8a);
+            box-shadow: 4px 4px 10px rgba(37, 99, 235, 0.2), -2px -2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .emboss-btn:active {
+            transform: scale(0.98);
+        }
+
+        .no-wrap {
+            white-space: nowrap;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .table-cell-padding td {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 antialiased h-screen overflow-hidden bg-slate-50">
+
+    <header
+        class="fixed top-0 left-0 w-full bg-navy-gradient text-white p-5 z-[50] shadow-lg h-[88px] flex items-center">
+        <div class="max-w-5xl mx-auto w-full flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 flex items-center justify-center text-xl bg-white/10 rounded-full backdrop-blur-sm border border-white/10 shadow-inner shrink-0">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div class="flex flex-col">
+                    <h1 class="text-base font-extrabold leading-none tracking-tight">Kalkulator Break Deposito</h1>
+                    <p class="text-[10px] text-blue-200 font-black tracking-[0.2em] uppercase mt-1">Bizdev Bank WM</p>
+                </div>
+            </div>
+            <button onclick="toggleMenu()"
+                class="w-9 h-9 flex items-center justify-center bg-white/10 rounded-xl hover:bg-white/20 transition border border-white/5 active:scale-95 shrink-0">
+                <i class="fas fa-bars text-sm text-blue-100"></i>
+            </button>
+        </div>
+    </header>
+
+    <div id="mainContent" class="h-full overflow-y-auto bg-slate-50 pt-[88px] w-full">
+        <div class="max-w-5xl mx-auto p-5 pb-32">
+
+            <div id="calcView" class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+                <div
+                    class="bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100 space-y-5 lg:sticky lg:top-6 z-10">
+                    <h3
+                        class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-3 mb-2">
+                        Input Data</h3>
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nominal
+                            Deposito</label>
+                        <div class="relative group">
+                            <span class="absolute left-4 top-3.5 font-black text-blue-900 text-sm">Rp</span>
+                            <input type="text" id="nominal" inputmode="numeric" oninput="formatInput(this)"
+                                class="w-full pl-11 pr-4 py-3 concave-input rounded-xl font-bold text-lg text-slate-800 outline-none transition-all placeholder-slate-300"
+                                placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tgl
+                                Tanam</label>
+                            <input type="date" id="tglTanam"
+                                class="w-full p-3 concave-input rounded-xl font-bold text-xs outline-none text-slate-600">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tgl
+                                Break</label>
+                            <input type="date" id="tglBreak"
+                                class="w-full p-3 concave-input rounded-xl font-bold text-xs outline-none text-slate-600">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Jangka Waktu
+                            Awal</label>
+                        <select id="tenor"
+                            class="w-full p-3 concave-input rounded-xl font-bold text-sm outline-none bg-white text-slate-600">
+                            <option value="">Pilih Tenor</option>
+                            <option value="1">1 Bulan</option>
+                            <option value="3">3 Bulan</option>
+                            <option value="6">6 Bulan</option>
+                            <option value="12">12 Bulan</option>
+                            <option value="24">24 Bulan</option>
+                            <option value="36">36 Bulan</option>
+                            <option value="60">60 Bulan</option>
+                        </select>
+                    </div>
+
+                    <div onclick="toggleReinvest()"
+                        class="p-3.5 bg-slate-50 rounded-xl border border-dashed border-slate-200 cursor-pointer hover:bg-blue-50/50 transition select-none">
+                        <div class="flex items-center gap-3">
+                            <div id="checkReinvest"
+                                class="w-5 h-5 rounded border-2 border-slate-300 flex items-center justify-center text-white text-[10px] transition-colors bg-white">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-600">Pencairan Re-Invest</span>
+                                <span class="text-[9px] text-slate-400">Denda 0% untuk nominal yang ditanam
+                                    kembali</span>
+                            </div>
+                        </div>
+
+                        <div id="reinvestOptions" onclick="event.stopPropagation()"
+                            class="hidden mt-3 pt-3 border-t border-slate-200 animate-in fade-in space-y-2">
+                            <div class="flex gap-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="reType" value="all" checked onclick="handleReType('all')"
+                                        class="accent-blue-600 w-3 h-3">
+                                    <span class="text-[10px] font-bold text-slate-500">Seluruhnya</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="reType" value="partial" onclick="handleReType('partial')"
+                                        class="accent-blue-600 w-3 h-3">
+                                    <span class="text-[10px] font-bold text-slate-500">Sebagian</span>
+                                </label>
+                            </div>
+                            <div id="partialInputWrapper" class="hidden">
+                                <input type="text" id="nominalReinvest" inputmode="numeric" oninput="formatInput(this)"
+                                    class="w-full p-2.5 concave-input rounded-lg text-xs font-bold mt-1"
+                                    placeholder="Masukkan Nominal Baru (Rp)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button onclick="resetApp()"
+                            class="py-3.5 bg-slate-200 text-slate-500 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-300 transition">Reset</button>
+                        <button onclick="calculate()"
+                            class="py-3.5 emboss-btn text-white font-black rounded-xl text-[10px] uppercase tracking-widest shadow-lg shadow-blue-200 active:scale-95 transition">Hitung
+                            Break</button>
+                    </div>
+                </div>
+
+                <div class="relative min-h-[400px]">
+
+                    <div id="emptyState"
+                        class="h-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 rounded-[2rem] text-center bg-slate-50/50">
+                        <div
+                            class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-300">
+                            <i class="fas fa-chart-pie text-2xl"></i>
+                        </div>
+                        <h4 class="text-slate-500 font-bold text-sm">Belum ada perhitungan</h4>
+                        <p class="text-slate-400 text-xs mt-2 max-w-[200px]">Isi data di sebelah kiri lalu tekan tombol
+                            "Hitung Break" untuk melihat hasil.</p>
+                    </div>
+
+                    <div id="resultCard"
+                        class="hidden slide-up bg-white rounded-[2rem] p-6 border border-blue-100 shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1.5 bg-blue-600"></div>
+
+                        <div class="text-center space-y-1 mb-6">
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Estimasi
+                                Pencairan Bersih</p>
+                            <h2 id="resTotal"
+                                class="text-3xl font-black text-blue-900 tracking-tighter leading-none py-1">Rp 0</h2>
+
+                            <div class="bg-slate-50 rounded-lg p-2 mt-2 border border-slate-100 inline-block w-full">
+                                <p class="text-[10px] leading-relaxed text-slate-500">
+                                    <span class="font-bold text-slate-400 uppercase">Hasil Investasi Bersih:</span>
+                                    <span id="resTotalBenefit" class="font-black text-blue-600 text-xs">-</span><br>
+                                    <span id="resDetailText" class="text-[9px] italic opacity-70"></span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 relative">
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="font-bold text-slate-500 uppercase tracking-wider text-[9px]">Umur
+                                    Deposito</span>
+                                <span id="resUmur" class="font-black text-slate-800 text-right leading-tight">-</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[11px] text-red-500">
+                                <span id="penaltyLabel" class="font-bold uppercase tracking-wider text-[9px]">Denda
+                                    Penalty (0,1%)</span>
+                                <span id="resPenalty" class="font-black">-</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[11px] text-red-500">
+                                <span class="font-bold uppercase tracking-wider text-[9px]">Biaya Materai</span>
+                                <span class="font-black">-Rp 10.000</span>
+                            </div>
+
+                            <div class="flex justify-between items-start mt-1 pt-1">
+                                <div class="flex flex-col">
+                                    <span class="font-black text-red-600 text-[11px] uppercase tracking-wider">Kelebihan
+                                        Bunga</span>
+                                    <span class="text-[8px] font-bold text-slate-400 italic">(Wajib Dikembalikan)</span>
+                                </div>
+                                <span id="resReversal" class="font-black text-lg text-red-600 leading-none">-</span>
+                            </div>
+
+                            <div class="pt-2">
+                                <button onclick="toggleDetails()"
+                                    class="w-full flex items-center justify-center gap-1.5 text-[10px] font-black text-blue-600 hover:text-blue-800 transition py-2">
+                                    <span id="btnDetailText">Lihat Rincian & Opsi Lain</span> <i
+                                        class="fas fa-chevron-down text-[9px]"></i>
+                                </button>
+
+                                <div id="details"
+                                    class="hidden mt-4 space-y-4 fade-in bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                                    <div class="flex flex-col bg-white p-3 rounded-xl border border-blue-50 shadow-sm">
+                                        <span
+                                            class="text-[8px] uppercase font-black text-slate-400 tracking-widest">Acuan
+                                            Suku Bunga:</span>
+                                        <span id="detMemo"
+                                            class="text-[10px] font-extrabold text-blue-900 mt-0.5">-</span>
+                                    </div>
+
+                                    <div class="bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm">
+                                        <table class="w-full text-[10px] table-cell-padding">
+                                            <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[8px]">
+                                                <tr>
+                                                    <td class="py-2">Periode</td>
+                                                    <td class="py-2 text-center">Tenor</td>
+                                                    <td class="py-2 text-right">Bunga</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="detTableBody" class="text-slate-600 font-bold"></tbody>
+                                        </table>
+                                    </div>
+
+                                    <div
+                                        class="bg-white p-3.5 rounded-xl border border-slate-100 space-y-2 shadow-sm text-[10px]">
+                                        <div class="flex justify-between text-slate-500 font-bold"><span>Bunga Sudah
+                                                Dibayar</span><span id="detBungaPaid"
+                                                class="text-slate-900 font-black">-</span></div>
+                                        <div class="flex justify-between text-slate-500 font-bold"><span>Bunga
+                                                Seharusnya</span><span id="detBungaSeharusnya"
+                                                class="text-emerald-600 font-black">-</span></div>
+                                        <div class="border-t border-slate-100 my-1"></div>
+                                        <div class="flex justify-between items-center">
+                                            <span
+                                                class="uppercase text-[9px] font-black tracking-widest text-slate-900">Total
+                                                Selisih</span>
+                                            <span id="detTotalDiff" class="text-red-600 font-black text-sm">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div id="ctaCompareBtn" onclick="showB2BInput()"
+                                        class="p-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl text-white shadow-lg relative overflow-hidden group cursor-pointer transform active:scale-95 transition-all">
+                                        <div
+                                            class="absolute right-0 top-0 w-20 h-20 bg-white/10 rounded-full -mr-8 -mt-8 blur-lg">
+                                        </div>
+                                        <div class="relative z-10 flex justify-between items-center">
+                                            <div>
+                                                <h3 class="text-xs font-black uppercase tracking-wider"><i
+                                                        class="fas fa-balance-scale mr-1"></i> Bandingkan</h3>
+                                                <p class="text-[9px] font-medium opacity-90 mt-0.5">Cek opsi <b>Kredit
+                                                        Musiman (Back-to-Back)</b></p>
+                                            </div>
+                                            <div
+                                                class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-arrow-right text-xs"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="b2bInputView" class="hidden w-full bg-slate-50 z-20 fade-in flex flex-col pb-32">
+                <div
+                    class="p-4 bg-white border-b border-slate-200 shadow-sm sticky top-0 z-30 flex items-center gap-3 rounded-t-xl lg:rounded-xl">
+                    <button onclick="closeB2B()"
+                        class="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full hover:bg-slate-200 text-slate-600 active:scale-95">
+                        <i class="fas fa-arrow-left text-xs"></i>
+                    </button>
+                    <h2 class="text-sm font-black text-slate-800 uppercase tracking-wide">Komparasi Kredit</h2>
+                </div>
+
+                <div class="p-6 space-y-6 max-w-md mx-auto w-full">
+                    <div class="bg-blue-50 p-5 rounded-2xl border border-blue-100 text-blue-900 shadow-sm">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-hourglass-half text-blue-400"></i>
+                            <p class="text-[10px] font-black uppercase tracking-widest opacity-60">Sisa Masa Deposito
+                            </p>
+                        </div>
+                        <p id="b2bTimeRem" class="text-xl font-black">-</p>
+                        <p class="text-[9px] mt-2 font-medium opacity-80 leading-relaxed">Deposito Anda masih akan
+                            berjalan selama sisa waktu ini jika memilih opsi kredit.</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-700 ml-1">Jangka Waktu Kredit (Bulan)</label>
+                        <input type="number" id="loanMonths"
+                            class="w-full p-3 concave-input rounded-xl font-bold text-lg text-slate-800 outline-none transition-all"
+                            placeholder="Bulan">
+                        <p class="text-[9px] text-slate-400 font-medium italic ml-1">* Satuan bulan (bulat), tidak bisa
+                            pecahan hari.</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-700 ml-1">Dana Tunai yang Dibutuhkan</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-3.5 font-black text-emerald-600 text-sm">Rp</span>
+                            <input type="text" id="neededFund" inputmode="numeric" oninput="formatInput(this)"
+                                class="w-full pl-11 pr-4 py-3.5 concave-input rounded-2xl font-bold text-lg text-emerald-700 outline-none focus:border-emerald-500 transition shadow-inner bg-white"
+                                placeholder="0">
+                        </div>
+                        <p id="maxLoanHint" class="text-[10px] text-slate-400 font-bold text-right italic"></p>
+                    </div>
+
+                    <button onclick="calculateComparison()"
+                        class="w-full py-4 emboss-btn bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-lg shadow-emerald-200 transform active:scale-95 transition">
+                        Analisa Perbandingan
+                    </button>
+
+                    <div id="resultDivider" class="hidden border-t border-slate-200 my-2 relative">
+                        <span
+                            class="absolute left-1/2 -top-2.5 -translate-x-1/2 bg-slate-50 px-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hasil</span>
+                    </div>
+
+                    <div id="compResult" class="hidden space-y-6 pt-2 fade-in">
+
+                        <div id="verdictCard"
+                            class="p-5 rounded-2xl shadow-md border-l-4 relative overflow-hidden text-white">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div
+                                class="bg-white rounded-2xl p-3 border border-red-100 shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
+                                <h4
+                                    class="text-[9px] font-black text-red-500 uppercase tracking-wider mb-3 text-center bg-red-50 py-1 rounded">
+                                    Opsi A: Break</h4>
+                                <div class="space-y-2 text-[10px]">
+                                    <div class="flex justify-between text-slate-500"><span>Pencairan</span> <span
+                                            id="valBreakCair" class="font-bold text-slate-800"></span></div>
+                                    <div class="flex justify-between text-slate-500"><span>Materai</span> <span
+                                            class="font-bold text-red-500">-10rb</span></div>
+                                    <div
+                                        class="flex justify-between font-bold border-t border-dashed border-slate-200 pt-1 mt-1">
+                                        <span class="text-slate-800">Sisa Uang</span>
+                                    </div>
+                                    <div id="valBreakFinal"
+                                        class="text-center font-black text-sm text-slate-800 py-1.5 bg-slate-100 rounded-lg">
+                                    </div>
+                                    <p class="text-[7px] text-slate-400 text-center leading-tight mt-1">*Sisa uang stlh
+                                        dikurangi kebutuhan</p>
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-white rounded-2xl p-3 border border-emerald-100 shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
+                                <h4
+                                    class="text-[9px] font-black text-emerald-600 uppercase tracking-wider mb-3 text-center bg-emerald-50 py-1 rounded">
+                                    Opsi B: Kredit</h4>
+                                <div class="space-y-2 text-[10px]">
+                                    <div class="flex justify-between text-slate-500"><span>Depo Cair Nanti</span> <span
+                                            id="valLoanDepo" class="font-bold text-slate-800"></span></div>
+                                    <div class="flex justify-between text-slate-500"><span>Bunga Depo (+)</span> <span
+                                            id="valLoanIntPlus" class="font-bold text-emerald-600"></span></div>
+                                    <div class="flex justify-between text-slate-500"><span>Biaya Kredit (-)</span> <span
+                                            id="valLoanCost" class="font-bold text-red-500"></span></div>
+                                    <div
+                                        class="flex justify-between font-bold border-t border-dashed border-slate-200 pt-1 mt-1">
+                                        <span class="text-slate-800">Sisa Uang</span>
+                                    </div>
+                                    <div id="valLoanFinal"
+                                        class="text-center font-black text-sm text-slate-800 py-1.5 bg-emerald-50 rounded-lg">
+                                    </div>
+                                    <p class="text-[7px] text-slate-400 text-center leading-tight mt-1">*Nilai aset
+                                        bersih saat jatuh tempo</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-5 border border-slate-100 shadow-sm text-[10px]">
+                            <h5 class="font-bold text-slate-400 uppercase tracking-widest mb-4">RINCIAN BIAYA KREDIT
+                            </h5>
+
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-slate-600 font-medium">Rate Bunga</span>
+                                <span id="loanRateDisplay" class="font-black text-slate-800"></span>
+                            </div>
+
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-slate-600 font-medium">Total Bunga</span>
+                                <span id="loanTotalInt" class="font-bold text-red-600"></span>
+                            </div>
+
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-slate-600 font-medium">Provisi (0.1%)</span>
+                                <span id="loanProv" class="font-bold text-red-600"></span>
+                            </div>
+
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-slate-600 font-medium">Materai</span>
+                                <span class="font-bold text-red-600">Rp 20.000</span>
+                            </div>
+
+                            <div class="border-t border-slate-100 my-3"></div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-800 font-bold uppercase tracking-wider">Total Biaya</span>
+                                <span id="loanTotalCost" class="font-black text-red-600 text-sm"></span>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button onclick="toggleMath()"
+                                class="text-[9px] text-blue-500 font-bold hover:text-blue-700 transition flex items-center justify-center gap-1 mx-auto">
+                                <span>Lihat Rincian Matematis</span> <i class="fas fa-chevron-down"></i>
+                            </button>
+
+                            <div id="mathDetails"
+                                class="hidden mt-3 text-left bg-slate-50 p-4 rounded-xl border border-slate-200 text-[9px] font-mono text-slate-600 space-y-2">
+                                <div>
+                                    <p class="font-bold text-slate-800 mb-1">1. Bunga Kredit:</p>
+                                    <p id="mathBunga" class="break-all"></p>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-800 mb-1">2. Provisi:</p>
+                                    <p id="mathProvisi" class="break-all"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center pb-4">
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Bizdev Bank WM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="menuModal"
+        class="hidden fixed inset-0 z-[160] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm fade-in p-6">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative">
+            <button onclick="toggleMenu()"
+                class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-400 hover:bg-slate-200"><i
+                    class="fas fa-times"></i></button>
+            <h3 class="text-lg font-black text-blue-900 mb-6 px-2">Menu Informasi</h3>
+            <div class="space-y-3">
+                <button onclick="openOverlay('historyView')"
+                    class="w-full p-4 bg-blue-50 hover:bg-blue-100 rounded-2xl flex items-center gap-4 text-left transition group border border-blue-100">
+                    <div
+                        class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm group-hover:scale-110 transition">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-slate-800 text-sm">History Memo Bunga</h4>
+                        <p class="text-[10px] text-slate-500 font-medium">Arsip suku bunga masa lalu</p>
+                    </div>
+                </button>
+                <button onclick="openOverlay('creditRateView')"
+                    class="w-full p-4 bg-emerald-50 hover:bg-emerald-100 rounded-2xl flex items-center gap-4 text-left transition group border border-emerald-100">
+                    <div
+                        class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-600 shadow-sm group-hover:scale-110 transition">
+                        <i class="fas fa-percent"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-slate-800 text-sm">Tabel Rate Kredit</h4>
+                        <p class="text-[10px] text-slate-500 font-medium">Acuan bunga back-to-back</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyView" class="hidden fixed inset-0 z-[150] bg-slate-50 flex flex-col fade-in">
+        <div class="p-4 bg-white border-b border-slate-100 flex justify-between items-center shadow-sm sticky top-0">
+            <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest">History Memo</h2>
+            <button onclick="closeOverlay('historyView')"
+                class="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-600 hover:bg-slate-200">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+        <div id="historyList" class="p-5 space-y-4 overflow-y-auto pb-20"></div>
+    </div>
+
+    <div id="creditRateView" class="hidden fixed inset-0 z-[150] bg-slate-50 flex flex-col fade-in">
+        <div class="p-4 bg-white border-b border-slate-100 flex justify-between items-center shadow-sm sticky top-0">
+            <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest">Tabel Rate Kredit</h2>
+            <button onclick="closeOverlay('creditRateView')"
+                class="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-600 hover:bg-slate-200">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+        <div class="p-5 overflow-y-auto pb-20">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <table class="w-full text-[10px]">
+                    <thead class="bg-blue-900 text-white font-bold uppercase text-[9px] tracking-wider">
+                        <tr>
+                            <th class="p-3 text-left">Plafon</th>
+                            <th class="p-3 text-left">Bunga</th>
+                            <th class="p-3 text-center">Provisi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
+                        <tr class="bg-blue-50/30">
+                            <td class="p-3">2,5jt - &lt;50jt</td>
+                            <td class="p-3 font-bold">Rate + 2% flat</td>
+                            <td class="p-3 text-center">0,10%</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3">50jt - &lt;100jt</td>
+                            <td class="p-3 font-bold">Rate + 1,5% flat</td>
+                            <td class="p-3 text-center">0,10%</td>
+                        </tr>
+                        <tr class="bg-blue-50/30">
+                            <td class="p-3">100jt - &lt;500jt</td>
+                            <td class="p-3 font-bold">Rate + 1,25% flat</td>
+                            <td class="p-3 text-center">0,10%</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3">500jt - &lt;1M</td>
+                            <td class="p-3 font-bold">Rate + 1,1% flat</td>
+                            <td class="p-3 text-center">0,10%</td>
+                        </tr>
+                        <tr class="bg-blue-50/30">
+                            <td class="p-3">1M - &lt;5M</td>
+                            <td class="p-3 font-bold">Rate + 1% eff</td>
+                            <td class="p-3 text-center">0,10%</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3">5M - &lt;15M</td>
+                            <td class="p-3 font-bold">Rate + 0,75% eff</td>
+                            <td class="p-3 text-center">0,10%</td>
+                        </tr>
+                        <tr class="bg-blue-50/30">
+                            <td class="p-3">≥ 15M</td>
+                            <td class="p-3 font-bold">Rate + 0,5% eff</td>
+                            <td class="p-3 text-center">0,10%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-4 text-[9px] text-slate-400 italic text-center px-4">
+                * Bunga adalah rate deposito agunan + margin.<br>
+                * Biaya Materai Kredit Rp 20.000 (2 lembar).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const _0x404bc1=_0x25ab;(function(_0xa66baa,_0x5574a1){const _0x1cde5e=_0x25ab,_0x3869a3=_0xa66baa();while(!![]){try{const _0x181398=parseInt(_0x1cde5e(0x204))/0x1*(-parseInt(_0x1cde5e(0x1ed))/0x2)+-parseInt(_0x1cde5e(0x1f3))/0x3*(parseInt(_0x1cde5e(0x20a))/0x4)+parseInt(_0x1cde5e(0x1fa))/0x5*(-parseInt(_0x1cde5e(0x202))/0x6)+parseInt(_0x1cde5e(0x1ea))/0x7*(-parseInt(_0x1cde5e(0x201))/0x8)+-parseInt(_0x1cde5e(0x17a))/0x9*(parseInt(_0x1cde5e(0x1f1))/0xa)+-parseInt(_0x1cde5e(0x1d7))/0xb+parseInt(_0x1cde5e(0x1bd))/0xc*(parseInt(_0x1cde5e(0x1bc))/0xd);if(_0x181398===_0x5574a1)break;else _0x3869a3['push'](_0x3869a3['shift']());}catch(_0x2a16e7){_0x3869a3['push'](_0x3869a3['shift']());}}}(_0x41c6,0x715b8));const DATA_MEMO_BUNGA=[{'date':_0x404bc1(0x1f2),'rates':{0x1:4.5,0x3:4.75,0x6:5.25,0xc:5.5,0x18:6.5,0x24:0x7,0x3c:8.25}},{'date':'2023-02-01','rates':{0x1:4.75,0x3:0x5,0x6:5.5,0xc:5.75,0x18:6.75,0x24:7.25,0x3c:8.5}},{'date':_0x404bc1(0x1c6),'rates':{0x1:4.5,0x3:4.75,0x6:5.25,0xc:5.5,0x18:6.5,0x24:0x7,0x3c:8.25}},{'date':_0x404bc1(0x1a5),'rates':{0x1:4.75,0x3:0x5,0x6:5.5,0xc:5.75,0x18:6.75,0x24:7.25,0x3c:8.25}},{'date':_0x404bc1(0x1bb),'rates':{0x1:0x5,0x3:5.25,0x6:5.75,0xc:0x6,0x18:0x7,0x24:7.5,0x3c:8.25}},{'date':_0x404bc1(0x1fc),'rates':{0x1:5.25,0x3:5.5,0x6:5.75,0xc:0x6,0x18:0x7,0x24:7.5,0x3c:8.25}},{'date':_0x404bc1(0x1c3),'rates':{0x1:5.5,0x3:5.75,0x6:0x6,0xc:6.25,0x18:7.25,0x24:7.75,0x3c:8.25}},{'date':'2020-11-25','rates':{0x1:5.5,0x3:0x6,0x6:6.25,0xc:6.5,0x18:7.25,0x24:7.75,0x3c:8.25}},{'date':_0x404bc1(0x1e9),'rates':{0x1:0x6,0x3:6.5,0x6:6.75,0xc:0x7,0x18:7.75,0x24:8.25,0x3c:8.75}},{'date':_0x404bc1(0x193),'rates':{0x1:6.25,0x3:6.75,0x6:0x7,0xc:7.25,0x18:0x8,0x24:8.25,0x3c:8.75}},{'date':_0x404bc1(0x19c),'rates':{0x1:6.5,0x3:0x7,0x6:7.25,0xc:7.5,0x18:0x8,0x24:8.25,0x3c:8.75}}],TAX_RATE=0.2;let GLOBAL={'nominal':0x0,'rateDepo':0x0,'daysRemaining':0x0,'netBreakAmount':0x0,'maturityDate':null,'penaltyTotal':0x0,'reversalTotal':0x0,'bungaPaid':0x0},isReinvest=![],reType='all',isB2BCalculated=![];const AVAILABLE_TENORS=[0x3c,0x24,0x18,0xc,0x6,0x3,0x1];function formatInput(_0x42ac58){const _0x1974ab=_0x404bc1;let _0x9c2a4c=_0x42ac58['value'][_0x1974ab(0x20f)](/\D/g,'');_0x42ac58[_0x1974ab(0x1de)]=_0x9c2a4c[_0x1974ab(0x20f)](/\B(?=(\d{3})+(?!\d))/g,'.');}function formatNumber(_0x490e6b){const _0xd623e6=_0x404bc1;return Math[_0xd623e6(0x19d)](_0x490e6b)[_0xd623e6(0x1b7)]('id-ID');}function formatRupiah(_0x2d82a5){return'Rp\x20'+formatNumber(_0x2d82a5);}function parseRupiah(_0x5ead98){const _0x495cc7=_0x404bc1;return parseFloat(_0x5ead98[_0x495cc7(0x20f)](/\./g,''))||0x0;}function formatDateReadable(_0x303790){const _0x2cd23a=_0x404bc1,_0x4d9b40=new Date(_0x303790);return _0x4d9b40[_0x2cd23a(0x187)](_0x2cd23a(0x1c0),{'day':_0x2cd23a(0x175),'month':'short','year':_0x2cd23a(0x180)});}function isLeapYear(_0xad085a){return _0xad085a%0x4===0x0&&_0xad085a%0x64!==0x0||_0xad085a%0x190===0x0;}function addMonths(_0xf5c48a,_0x176997){const _0x198818=new Date(_0xf5c48a);return _0x198818['setMonth'](_0x198818['getMonth']()+_0x176997),_0x198818;}function getDetailedAgeText(_0x5d7cf9){const _0x422b98=_0x404bc1;let _0x9c0f09=Math['floor'](_0x5d7cf9/0x16d),_0x190f1e=_0x5d7cf9%0x16d,_0x442f99=Math[_0x422b98(0x1fd)](_0x190f1e/0x1e),_0x482e19=_0x190f1e%0x1e;if(_0x9c0f09===0x0&&_0x442f99===0x0)return'';let _0x275598=_0x9c0f09>0x0?_0x9c0f09+_0x422b98(0x1a3):'',_0x388620=_0x442f99>0x0?_0x442f99+_0x422b98(0x1ce):'';return'('+_0x275598+_0x388620+_0x482e19+_0x422b98(0x200);}function toggleReinvest(){const _0x260f39=_0x404bc1;if(isB2BCalculated){alert(_0x260f39(0x211));return;}isReinvest=!isReinvest;const _0x4f4166=document[_0x260f39(0x1f0)](_0x260f39(0x1ab)),_0x108b6b=document[_0x260f39(0x1f0)](_0x260f39(0x181));isReinvest?(_0x4f4166[_0x260f39(0x1a2)]=_0x260f39(0x1be),_0x108b6b[_0x260f39(0x1f7)][_0x260f39(0x1d0)](_0x260f39(0x194))):(_0x4f4166[_0x260f39(0x1a2)]=_0x260f39(0x184),_0x108b6b[_0x260f39(0x1f7)]['add'](_0x260f39(0x194)));}function handleReType(_0x38b5d5){const _0x88e189=_0x404bc1;reType=_0x38b5d5;const _0x11d599=document['getElementById'](_0x88e189(0x196));_0x38b5d5===_0x88e189(0x1e4)?_0x11d599[_0x88e189(0x1f7)]['remove'](_0x88e189(0x194)):_0x11d599[_0x88e189(0x1f7)][_0x88e189(0x1dc)](_0x88e189(0x194));}function toggleDetails(){const _0x14d079=_0x404bc1,_0xadbd26=document['getElementById']('details'),_0x4c79c8=document[_0x14d079(0x1f0)](_0x14d079(0x1e2));_0xadbd26['classList']['toggle'](_0x14d079(0x194)),_0xadbd26[_0x14d079(0x1f7)][_0x14d079(0x1b3)](_0x14d079(0x194))?_0x4c79c8['innerText']=isReinvest?_0x14d079(0x1d5):'Lihat\x20Rincian\x20&\x20Opsi\x20Lain':_0x4c79c8[_0x14d079(0x1a9)]=_0x14d079(0x1e3);}function toggleMath(){const _0x3e38f4=_0x404bc1,_0x34a62b=document[_0x3e38f4(0x1f0)](_0x3e38f4(0x18a));_0x34a62b[_0x3e38f4(0x1f7)][_0x3e38f4(0x1e0)]('hidden');}function toggleMenu(){const _0x4ad17b=_0x404bc1,_0x2c70b4=document[_0x4ad17b(0x1f0)](_0x4ad17b(0x1a7));_0x2c70b4[_0x4ad17b(0x1f7)][_0x4ad17b(0x1e0)]('hidden');}function openOverlay(_0x510922){const _0x3c6a2f=_0x404bc1;toggleMenu(),document[_0x3c6a2f(0x1f0)](_0x510922)[_0x3c6a2f(0x1f7)][_0x3c6a2f(0x1d0)](_0x3c6a2f(0x194));if(_0x510922==='historyView')renderHistory();}function closeOverlay(_0xd0918a){const _0x424439=_0x404bc1;document[_0x424439(0x1f0)](_0xd0918a)[_0x424439(0x1f7)][_0x424439(0x1dc)](_0x424439(0x194));}function calculate(){const _0x4f74fb=_0x404bc1,_0x39d74e=parseRupiah(document[_0x4f74fb(0x1f0)]('nominal')[_0x4f74fb(0x1de)]),_0x4c9a9a=parseInt(document[_0x4f74fb(0x1f0)]('tenor')['value']),_0x465da5=document[_0x4f74fb(0x1f0)](_0x4f74fb(0x1f9))[_0x4f74fb(0x1de)],_0x2f594d=document[_0x4f74fb(0x1f0)]('tglBreak')['value'];if(!_0x39d74e||!_0x4c9a9a||!_0x465da5||!_0x2f594d)return alert('Mohon\x20lengkapi\x20semua\x20input!');const _0x2d883a=new Date(_0x465da5),_0x1fadc2=new Date(_0x2f594d),_0x26e9bc=addMonths(_0x2d883a,_0x4c9a9a);if(_0x1fadc2<=_0x2d883a)return alert(_0x4f74fb(0x1a4));if(_0x1fadc2>=_0x26e9bc)return alert(_0x4f74fb(0x1d3));isB2BCalculated=![];const _0x15dbf6=getActiveMemo(_0x2d883a),_0x31fb48=_0x15dbf6[_0x4f74fb(0x195)][_0x4c9a9a]||0x0,_0x39f113=Math[_0x4f74fb(0x1e1)]((_0x1fadc2-_0x2d883a)/0x5265c00),_0xf27c2a=isLeapYear(_0x2d883a['getFullYear']())?0x16e:0x16d;let _0x1a85b8=0x0,_0x4972cb=0x0,_0x1bc9c9='',_0x4798a9=0x0;if(_0x39f113<0x1e)_0x1a85b8=0x0,_0x4972cb=0x0,_0x4798a9=0x0,document['getElementById']('penaltyLabel')['innerText']=_0x4f74fb(0x190),_0x1bc9c9=_0x4f74fb(0x18b)+formatDateReadable(_0x2d883a)+'\x20-\x20'+formatDateReadable(_0x1fadc2)+_0x4f74fb(0x185)+_0x39f113+'\x20hr</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22text-right\x20py-2\x22>0\x20<span\x20class=\x22text-[8px]\x22>(Hangus)</span></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>';else{_0x1a85b8=_0x39d74e*(_0x31fb48/0x64)*_0x39f113/_0xf27c2a*(0x1-TAX_RATE);let _0x618877=new Date(_0x2d883a);while(!![]){let _0x514e5c=(_0x1fadc2[_0x4f74fb(0x1d4)]()-_0x618877['getFullYear']())*0xc+(_0x1fadc2[_0x4f74fb(0x17c)]()-_0x618877[_0x4f74fb(0x17c)]());if(_0x1fadc2[_0x4f74fb(0x1ec)]()<_0x618877[_0x4f74fb(0x1ec)]())_0x514e5c--;if(_0x514e5c<0x1)break;let _0x373e1c=AVAILABLE_TENORS[_0x4f74fb(0x1da)](_0x462f11=>_0x462f11<=_0x514e5c)||0x1;const _0x27f62a=_0x15dbf6['rates'][_0x373e1c],_0x20248b=addMonths(_0x618877,_0x373e1c),_0x2012e6=Math['ceil']((_0x20248b-_0x618877)/0x5265c00),_0x2c3c4c=isLeapYear(_0x618877['getFullYear']())?0x16e:0x16d,_0xb2960=_0x39d74e*(_0x27f62a/0x64)*_0x2012e6/_0x2c3c4c*(0x1-TAX_RATE);_0x4972cb+=_0xb2960,_0x1bc9c9+='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22border-b\x20border-dashed\x20border-slate-100\x20py-2\x22>'+formatDateReadable(_0x618877)+_0x4f74fb(0x1af)+formatDateReadable(_0x20248b)+_0x4f74fb(0x179)+(_0x373e1c>=0xc?_0x373e1c/0xc+_0x4f74fb(0x20c):_0x373e1c+_0x4f74fb(0x1cb))+_0x4f74fb(0x174)+formatNumber(_0xb2960)+_0x4f74fb(0x207)+_0x27f62a+_0x4f74fb(0x1cd),_0x618877=_0x20248b;}const _0x1887c1=Math[_0x4f74fb(0x1e1)]((_0x1fadc2-_0x618877)/0x5265c00);_0x1887c1>0x0&&(_0x1bc9c9+='<tr\x20class=\x22bg-red-50\x20text-red-400\x20italic\x22><td\x20class=\x22py-2\x22>'+formatDateReadable(_0x618877)+_0x4f74fb(0x1af)+formatDateReadable(_0x1fadc2)+_0x4f74fb(0x186)+_0x1887c1+_0x4f74fb(0x1ba));if(isReinvest){if(reType===_0x4f74fb(0x1df))_0x4798a9=0x0,document[_0x4f74fb(0x1f0)](_0x4f74fb(0x1a0))[_0x4f74fb(0x1a9)]='Denda\x20Penalty\x20(Ditanam)';else{const _0x53d487=parseRupiah(document[_0x4f74fb(0x1f0)]('nominalReinvest')[_0x4f74fb(0x1de)]),_0x407b0e=Math[_0x4f74fb(0x1c2)](0x0,_0x39d74e-_0x53d487);_0x4798a9=_0x407b0e*0.001,document[_0x4f74fb(0x1f0)](_0x4f74fb(0x1a0))['innerText']='Denda\x20Penalty\x20(0,1%\x20Sisa)';}}else _0x4798a9=_0x39d74e*0.001,document[_0x4f74fb(0x1f0)](_0x4f74fb(0x1a0))[_0x4f74fb(0x1a9)]=_0x4f74fb(0x197);}const _0x38d22d=Math[_0x4f74fb(0x1c2)](0x0,_0x1a85b8-_0x4972cb),_0x5a2fd3=0x2710,_0x3b3822=_0x39d74e-_0x4798a9-_0x38d22d-_0x5a2fd3,_0x23f1d7=_0x3b3822+_0x1a85b8;document[_0x4f74fb(0x1f0)]('resTotal')[_0x4f74fb(0x1a9)]=formatRupiah(_0x3b3822),document[_0x4f74fb(0x1f0)]('resDetailText')[_0x4f74fb(0x1a9)]=_0x4f74fb(0x1ae)+formatNumber(_0x3b3822)+_0x4f74fb(0x1ca)+formatNumber(_0x1a85b8)+')',document[_0x4f74fb(0x1f0)](_0x4f74fb(0x20d))[_0x4f74fb(0x1a9)]=formatRupiah(_0x23f1d7),document[_0x4f74fb(0x1f0)]('resUmur')['innerText']=formatNumber(_0x39f113)+_0x4f74fb(0x183)+getDetailedAgeText(_0x39f113);const _0x37c126=document[_0x4f74fb(0x1f0)](_0x4f74fb(0x18e));_0x4798a9>0x0?(_0x37c126['innerText']='-'+formatNumber(_0x4798a9),_0x37c126[_0x4f74fb(0x1a2)]='font-black\x20text-red-500'):(_0x37c126['innerText']='0',_0x37c126['className']=_0x4f74fb(0x1c5));const _0x28c3ff=document[_0x4f74fb(0x1f0)](_0x4f74fb(0x1e7));_0x38d22d>0x0?(_0x28c3ff[_0x4f74fb(0x1a9)]='-'+formatNumber(_0x38d22d),_0x28c3ff[_0x4f74fb(0x1a2)]=_0x4f74fb(0x19f)):(_0x28c3ff['innerText']='0',_0x28c3ff[_0x4f74fb(0x1a2)]=_0x4f74fb(0x1b9));document[_0x4f74fb(0x1f0)](_0x4f74fb(0x1a6))[_0x4f74fb(0x1a9)]=_0x4f74fb(0x188)+formatDateReadable(_0x15dbf6['date']),document['getElementById'](_0x4f74fb(0x1d1))[_0x4f74fb(0x212)]=_0x1bc9c9,document[_0x4f74fb(0x1f0)](_0x4f74fb(0x177))[_0x4f74fb(0x1a9)]=formatRupiah(_0x1a85b8),document[_0x4f74fb(0x1f0)](_0x4f74fb(0x18d))[_0x4f74fb(0x1a9)]=formatRupiah(_0x4972cb);const _0x241b61=document[_0x4f74fb(0x1f0)](_0x4f74fb(0x19b));_0x38d22d>0x0?(_0x241b61[_0x4f74fb(0x1a9)]='-'+formatRupiah(_0x38d22d),_0x241b61[_0x4f74fb(0x1a2)]=_0x4f74fb(0x1cc)):(_0x241b61[_0x4f74fb(0x1a9)]='Rp\x200',_0x241b61[_0x4f74fb(0x1a2)]=_0x4f74fb(0x1b8));document['getElementById'](_0x4f74fb(0x1a6))[_0x4f74fb(0x1a9)]=_0x4f74fb(0x188)+formatDateReadable(_0x15dbf6[_0x4f74fb(0x1f4)])+_0x4f74fb(0x19a),GLOBAL={'nominal':_0x39d74e,'rateDepo':_0x31fb48,'daysRemaining':Math[_0x4f74fb(0x1e1)]((_0x26e9bc-_0x1fadc2)/0x5265c00),'netBreakAmount':_0x3b3822,'maturityDate':_0x26e9bc,'penaltyTotal':_0x4798a9,'reversalTotal':_0x38d22d,'bungaPaid':_0x1a85b8},document['getElementById'](_0x4f74fb(0x1ad))[_0x4f74fb(0x1f7)][_0x4f74fb(0x1dc)]('hidden'),document[_0x4f74fb(0x1f0)](_0x4f74fb(0x1aa))[_0x4f74fb(0x1f7)][_0x4f74fb(0x1d0)](_0x4f74fb(0x194));const _0x5c0057=document['getElementById'](_0x4f74fb(0x1a8));isReinvest?(_0x5c0057['classList'][_0x4f74fb(0x1dc)](_0x4f74fb(0x194)),document['getElementById'](_0x4f74fb(0x1e2))[_0x4f74fb(0x1a9)]=_0x4f74fb(0x1d5)):(_0x5c0057[_0x4f74fb(0x1f7)][_0x4f74fb(0x1d0)](_0x4f74fb(0x194)),document[_0x4f74fb(0x1f0)](_0x4f74fb(0x1e2))[_0x4f74fb(0x1a9)]='Lihat\x20Rincian\x20&\x20Opsi\x20Lain');}function getActiveMemo(_0x17cc9d){const _0x26a2ae=_0x404bc1,_0x1bfd40=[...DATA_MEMO_BUNGA][_0x26a2ae(0x210)]((_0x418b43,_0x5458e2)=>new Date(_0x5458e2[_0x26a2ae(0x1f4)])-new Date(_0x418b43['date'])),_0x4704e0=_0x1bfd40['findIndex'](_0xe84a29=>new Date(_0xe84a29[_0x26a2ae(0x1f4)])<=_0x17cc9d);return _0x4704e0===-0x1?_0x1bfd40[_0x1bfd40['length']-0x1]:_0x1bfd40[_0x4704e0];}function showB2BInput(){const _0x17e569=_0x404bc1,_0x59efaa=document[_0x17e569(0x1f0)]('b2bInputView'),_0x3a37f0=document[_0x17e569(0x1f0)]('calcView');_0x3a37f0['classList'][_0x17e569(0x1dc)](_0x17e569(0x194)),_0x59efaa[_0x17e569(0x1f7)][_0x17e569(0x1d0)](_0x17e569(0x194)),window[_0x17e569(0x178)](0x0,0x0),_0x59efaa[_0x17e569(0x1db)]=0x0;const _0x1031f2=GLOBAL[_0x17e569(0x203)];document[_0x17e569(0x1f0)](_0x17e569(0x1d2))[_0x17e569(0x1a9)]=formatNumber(_0x1031f2)+_0x17e569(0x183)+getDetailedAgeText(_0x1031f2),document['getElementById']('loanMonths')[_0x17e569(0x1de)]=Math['ceil'](_0x1031f2/0x1e),document[_0x17e569(0x1f0)](_0x17e569(0x1b4))[_0x17e569(0x1a9)]=_0x17e569(0x20e)+formatRupiah(GLOBAL[_0x17e569(0x19e)]*0.95);}function closeB2B(){const _0x448259=_0x404bc1;document[_0x448259(0x1f0)]('b2bInputView')[_0x448259(0x1f7)]['add'](_0x448259(0x194)),document[_0x448259(0x1f0)](_0x448259(0x17e))['classList'][_0x448259(0x1dc)](_0x448259(0x194)),document[_0x448259(0x1f0)]('resultDivider')[_0x448259(0x1f7)][_0x448259(0x1dc)]('hidden'),document[_0x448259(0x1f0)](_0x448259(0x1c8))[_0x448259(0x1f7)]['remove']('hidden');}function getLoanMargin(_0x32a8f7){const _0x1f3550=_0x404bc1;if(_0x32a8f7<0x2faf080)return{'margin':0x2,'label':_0x1f3550(0x192)};if(_0x32a8f7<0x5f5e100)return{'margin':1.5,'label':'+1,5%\x20flat'};if(_0x32a8f7<0x1dcd6500)return{'margin':1.25,'label':_0x1f3550(0x205)};if(_0x32a8f7<0x3b9aca00)return{'margin':1.1,'label':_0x1f3550(0x1fb)};if(_0x32a8f7<0x12a05f200)return{'margin':0x1,'label':_0x1f3550(0x1c4)};if(_0x32a8f7<0x37e11d600)return{'margin':0.75,'label':_0x1f3550(0x209)};return{'margin':0.5,'label':_0x1f3550(0x1b2)};}function calculateComparison(){const _0x18d5b6=_0x404bc1,_0x3e149b=parseRupiah(document[_0x18d5b6(0x1f0)]('neededFund')[_0x18d5b6(0x1de)]),_0x193ea8=GLOBAL[_0x18d5b6(0x19e)]*0.95;if(_0x3e149b<=0x0||_0x3e149b>_0x193ea8)return alert(_0x18d5b6(0x1dd));isB2BCalculated=!![];const _0x617287=GLOBAL[_0x18d5b6(0x1d6)],_0x4a88c2=_0x617287-_0x3e149b,_0xe7e8f6=parseInt(document['getElementById'](_0x18d5b6(0x17f))[_0x18d5b6(0x1de)])||0x1,_0x22d825=getLoanMargin(_0x3e149b),_0x5f1c07=GLOBAL['rateDepo']+_0x22d825[_0x18d5b6(0x1bf)],_0x507138=_0x3e149b*(_0x5f1c07/0x64)*(_0xe7e8f6/0xc),_0x4593f2=_0x3e149b*0.001*(_0xe7e8f6/0xc),_0x599b5b=0x4e20,_0x46d859=_0x507138+_0x4593f2+_0x599b5b,_0x18696c=GLOBAL['daysRemaining'],_0xebe02b=_0xe7e8f6*0x1e;let _0x4b0148=0x0;if(_0xebe02b<=_0x18696c)_0x4b0148=GLOBAL['nominal']*(GLOBAL[_0x18d5b6(0x1b0)]/0x64)*(_0xebe02b/0x16d)*(0x1-TAX_RATE);else{const _0x32c5c0=GLOBAL[_0x18d5b6(0x19e)]*(GLOBAL[_0x18d5b6(0x1b0)]/0x64)*(_0x18696c/0x16d)*(0x1-TAX_RATE),_0x5dfda4=_0xebe02b-_0x18696c,_0x333d3e=GLOBAL[_0x18d5b6(0x19e)]*(GLOBAL[_0x18d5b6(0x1b0)]/0x64)*(_0x5dfda4/0x16d)*(0x1-TAX_RATE);_0x4b0148=_0x32c5c0+_0x333d3e;}const _0x4d2cab=GLOBAL['nominal']+_0x4b0148-(_0x3e149b+_0x46d859),_0x10eec7=_0x4d2cab-_0x4a88c2,_0x38eeb7=_0x10eec7>0x0,_0x524606=document[_0x18d5b6(0x1f0)](_0x18d5b6(0x208));_0x38eeb7?(_0x524606[_0x18d5b6(0x1a2)]=_0x18d5b6(0x1c1),_0x524606[_0x18d5b6(0x212)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22relative\x20z-10\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20class=\x22text-xs\x20font-black\x20uppercase\x20tracking-widest\x20mb-1\x20text-emerald-100\x22>Rekomendasi:\x20AMBIL\x20KREDIT</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-[10px]\x20font-medium\x20leading-relaxed\x20opacity-90\x22>Dengan\x20mengambil\x20kredit,\x20nilai\x20aset\x20bersih\x20Anda\x20di\x20akhir\x20periode\x20lebih\x20tinggi\x20<b\x20class=\x22text-yellow-300\x22>'+formatRupiah(_0x10eec7)+'</b>\x20dibandingkan\x20jika\x20Anda\x20break\x20deposito\x20sekarang.</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div><div\x20class=\x22absolute\x20right-0\x20bottom-0\x20text-emerald-800\x20opacity-20\x20text-6xl\x20-mb-3\x20-mr-3\x22><i\x20class=\x22fas\x20fa-check-circle\x22></i></div>'):(_0x524606[_0x18d5b6(0x1a2)]=_0x18d5b6(0x1a1),_0x524606[_0x18d5b6(0x212)]=_0x18d5b6(0x1f6)+formatRupiah(Math['abs'](_0x10eec7))+_0x18d5b6(0x213)),document[_0x18d5b6(0x1f0)]('valBreakCair')[_0x18d5b6(0x1a9)]=formatNumber(_0x617287+0x2710),document['getElementById'](_0x18d5b6(0x1d8))[_0x18d5b6(0x1a9)]=formatRupiah(_0x4a88c2),document[_0x18d5b6(0x1f0)]('valLoanDepo')[_0x18d5b6(0x1a9)]=formatNumber(GLOBAL[_0x18d5b6(0x19e)]),document['getElementById'](_0x18d5b6(0x1ac))[_0x18d5b6(0x1a9)]='+'+formatNumber(_0x4b0148),document['getElementById']('valLoanCost')[_0x18d5b6(0x1a9)]='-'+formatNumber(_0x46d859),document[_0x18d5b6(0x1f0)](_0x18d5b6(0x1e5))[_0x18d5b6(0x1a9)]=formatRupiah(_0x4d2cab),document[_0x18d5b6(0x1f0)]('loanRateDisplay')[_0x18d5b6(0x1a9)]=GLOBAL['rateDepo']+_0x18d5b6(0x1f5)+_0x22d825[_0x18d5b6(0x1bf)]+_0x18d5b6(0x1c7)+_0x5f1c07+_0x18d5b6(0x17d)+_0x22d825[_0x18d5b6(0x191)]+')',document[_0x18d5b6(0x1f0)](_0x18d5b6(0x1b6))[_0x18d5b6(0x1a9)]=formatRupiah(_0x507138),document[_0x18d5b6(0x1f0)](_0x18d5b6(0x20b))[_0x18d5b6(0x1a9)]=formatRupiah(_0x4593f2),document[_0x18d5b6(0x1f0)](_0x18d5b6(0x1cf))[_0x18d5b6(0x1a9)]=formatRupiah(_0x46d859),document['getElementById']('mathBunga')[_0x18d5b6(0x1a9)]='Rp\x20'+formatNumber(_0x3e149b)+'\x20x\x20'+_0x5f1c07+'%\x20x\x20('+_0xe7e8f6+'/12)\x20=\x20Rp\x20'+formatNumber(_0x507138),document[_0x18d5b6(0x1f0)]('mathProvisi')[_0x18d5b6(0x1a9)]=_0x18d5b6(0x198)+formatNumber(_0x3e149b)+'\x20x\x200.1%\x20x\x20('+_0xe7e8f6+_0x18d5b6(0x1ef)+formatNumber(_0x4593f2),document['getElementById'](_0x18d5b6(0x18a))['classList'][_0x18d5b6(0x1dc)](_0x18d5b6(0x194)),document[_0x18d5b6(0x1f0)]('compResult')[_0x18d5b6(0x1f7)][_0x18d5b6(0x1d0)](_0x18d5b6(0x194)),document[_0x18d5b6(0x1f0)](_0x18d5b6(0x1b5))[_0x18d5b6(0x1f7)][_0x18d5b6(0x1d0)](_0x18d5b6(0x194)),setTimeout(()=>{const _0x15f7a8=_0x18d5b6;document[_0x15f7a8(0x1f0)](_0x15f7a8(0x208))[_0x15f7a8(0x18f)]({'behavior':_0x15f7a8(0x18c),'block':_0x15f7a8(0x176)});},0x64);}function _0x25ab(_0x1e7be8,_0x33a42c){_0x1e7be8=_0x1e7be8-0x174;const _0x41c651=_0x41c6();let _0x25ab10=_0x41c651[_0x1e7be8];return _0x25ab10;}function renderHistory(){const _0x433854=_0x404bc1,_0x33fe2f=document[_0x433854(0x1f0)](_0x433854(0x189));_0x33fe2f['innerHTML']='',DATA_MEMO_BUNGA[_0x433854(0x1ff)](_0x5573e2=>{const _0x48bdaa=_0x433854;let _0x59ec36=_0x48bdaa(0x1d9)+formatDateReadable(_0x5573e2[_0x48bdaa(0x1f4)])+_0x48bdaa(0x1e8);Object['keys'](_0x5573e2[_0x48bdaa(0x195)])[_0x48bdaa(0x1ff)](_0x5cfeaf=>{const _0x31fd22=_0x48bdaa;_0x59ec36+=_0x31fd22(0x1b1)+(_0x5cfeaf>=0xc?_0x5cfeaf/0xc+'th':_0x5cfeaf+'bln')+_0x31fd22(0x17b)+_0x5573e2[_0x31fd22(0x195)][_0x5cfeaf]+_0x31fd22(0x1ee);}),_0x33fe2f[_0x48bdaa(0x212)]+=_0x59ec36+_0x48bdaa(0x1e6);});}function resetApp(){const _0x3b3198=_0x404bc1;isB2BCalculated=![],document[_0x3b3198(0x1f0)](_0x3b3198(0x19e))['value']='',document['getElementById'](_0x3b3198(0x199))[_0x3b3198(0x1de)]='',document['getElementById'](_0x3b3198(0x1f9))['value']='',document['getElementById'](_0x3b3198(0x1aa))[_0x3b3198(0x1f7)][_0x3b3198(0x1dc)](_0x3b3198(0x194)),document['getElementById']('emptyState')[_0x3b3198(0x1f7)][_0x3b3198(0x1d0)](_0x3b3198(0x194)),document[_0x3b3198(0x1f0)]('compResult')[_0x3b3198(0x1f7)]['add']('hidden'),document[_0x3b3198(0x1f0)](_0x3b3198(0x1f8))[_0x3b3198(0x1f7)][_0x3b3198(0x1dc)](_0x3b3198(0x194));const _0x8cda5f=document[_0x3b3198(0x1f0)](_0x3b3198(0x1a8));_0x8cda5f['classList']['remove'](_0x3b3198(0x194)),document[_0x3b3198(0x1f0)](_0x3b3198(0x1e2))['innerText']=_0x3b3198(0x206);if(isReinvest)toggleReinvest();}function _0x41c6(){const _0xc4e7fa=['resultCard','checkReinvest','valLoanIntPlus','emptyState','(Pokok\x20Cair\x20','\x20-\x20','rateDepo','<div\x20class=\x22text-center\x20bg-slate-50\x20p-1\x20rounded\x20border\x20border-slate-100\x22><div\x20class=\x22text-[7px]\x20text-slate-400\x20uppercase\x20font-bold\x22>','+0,5%\x20eff','contains','maxLoanHint','resultDivider','loanTotalInt','toLocaleString','text-emerald-600\x20font-black\x20text-sm','font-black\x20text-lg\x20text-emerald-600\x20leading-none','\x20hr</td><td\x20class=\x22text-right\x20py-2\x22>0\x20<span\x20class=\x22text-[8px]\x22>(Hangus)</span></td></tr>','2021-05-01','224146kysGmY','2880oOTcpf','w-5\x20h-5\x20rounded\x20border-none\x20bg-blue-600\x20flex\x20items-center\x20justify-center\x20text-white\x20text-[10px]\x20shadow-sm','margin','id-ID','p-5\x20rounded-2xl\x20shadow-lg\x20border-l-4\x20border-emerald-300\x20bg-gradient-to-r\x20from-emerald-600\x20to-teal-700\x20text-white\x20relative\x20overflow-hidden\x20mb-4','max','2021-01-26','+1%\x20eff','font-black\x20text-emerald-600','2021-09-30','%\x20=\x20','calcView','split','\x20+\x20Bunga\x20Sudah\x20Diterima\x20','\x20Bln','text-red-600\x20font-black\x20text-sm','%)</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>','\x20bln\x20','loanTotalCost','remove','detTableBody','b2bTimeRem','Tgl\x20Break\x20melebihi\x20jatuh\x20tempo!','getFullYear','Lihat\x20Rincian','netBreakAmount','1456796ImzHcI','valBreakFinal','<div\x20class=\x22bg-white\x20p-4\x20rounded-2xl\x20border\x20border-slate-200\x20shadow-sm\x22><p\x20class=\x22text-xs\x20font-black\x20text-blue-900\x20mb-2\x22>Tgl:\x20','find','scrollTop','add','Nominal\x20tidak\x20valid\x20(Maks\x2095%)','value','all','toggle','ceil','btnDetailText','Tutup\x20Rincian','partial','valLoanFinal','</div></div>','resReversal','</p><div\x20class=\x22grid\x20grid-cols-4\x20gap-2\x22>','2020-10-01','39760LLKGUA','toISOString','getDate','1262QXbByL','%</div></div>','/12)\x20=\x20Rp\x20','getElementById','6365910KNJNOW','2025-08-28','18BgiQfR','date','%\x20+\x20','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22relative\x20z-10\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20class=\x22text-xs\x20font-black\x20uppercase\x20tracking-widest\x20mb-1\x20text-rose-100\x22>Rekomendasi:\x20BREAK\x20SAJA</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-[10px]\x20font-medium\x20leading-relaxed\x20opacity-90\x22>Biaya\x20kredit\x20mahal.\x20Anda\x20lebih\x20hemat\x20<b\x20class=\x22text-yellow-300\x22>','classList','details','tglTanam','10OhUVMo','+1,1%\x20flat','2021-02-25','floor','onload','forEach','\x20hr)','1128MOpFbH','2482554WooNZR','daysRemaining','815pILfqZ','+1,25%\x20flat','Lihat\x20Rincian\x20&\x20Opsi\x20Lain','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-[9px]\x20text-slate-400\x20font-normal\x22>(','verdictCard','+0,75%\x20eff','508052vzPKhY','loanProv','\x20Thn','resTotalBenefit','Maks:\x20','replace','sort','Fungsi\x20Reinvest\x20dinonaktifkan\x20karena\x20Anda\x20sedang\x20dalam\x20mode\x20Komparasi\x20Kredit.\x20Silakan\x20tekan\x20Reset\x20untuk\x20memulai\x20perhitungan\x20baru.','innerHTML','</b>\x20jika\x20melakukan\x20Break\x20Deposito.</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div><div\x20class=\x22absolute\x20right-0\x20bottom-0\x20text-rose-900\x20opacity-20\x20text-6xl\x20-mb-3\x20-mr-3\x22><i\x20class=\x22fas\x20fa-exclamation-triangle\x22></i></div>','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22text-right\x20font-bold\x20border-b\x20border-dashed\x20border-slate-100\x20py-2\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20flex-col\x20items-end\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span>','2-digit','center','detBungaPaid','scrollTo','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22text-center\x20text-blue-800\x20font-bold\x20border-b\x20border-dashed\x20border-slate-100\x20py-2\x22>','9FyAEHr','</div><div\x20class=\x22text-[10px]\x20font-bold\x20text-slate-700\x22>','getMonth','%\x20(','compResult','loanMonths','numeric','reinvestOptions','tglBreak','\x20Hari\x20','w-5\x20h-5\x20rounded\x20border-2\x20border-slate-300\x20flex\x20items-center\x20justify-center\x20text-white\x20text-[10px]\x20transition-colors\x20bg-white','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22text-center\x20text-[8px]\x20py-2\x22>','</td><td\x20class=\x22text-center\x20text-[8px]\x20py-2\x22>','toLocaleDateString','Memo\x20Tgl:\x20','historyList','mathDetails','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20class=\x22bg-red-50\x20text-red-400\x20italic\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22py-2\x22>','smooth','detBungaSeharusnya','resPenalty','scrollIntoView','Penalty\x20(Nihil\x20<\x201\x20Bln)','label','+2%\x20flat','2020-07-30','hidden','rates','partialInputWrapper','Denda\x20Penalty\x20(0,1%)','Rp\x20','tenor','\x20(Bunga\x20Net\x20Pajak\x2020%)','detTotalDiff','2020-01-29','round','nominal','font-black\x20text-lg\x20text-red-600\x20leading-none','penaltyLabel','p-5\x20rounded-2xl\x20shadow-lg\x20border-l-4\x20border-rose-300\x20bg-gradient-to-r\x20from-rose-600\x20to-red-700\x20text-white\x20relative\x20overflow-hidden\x20mb-4','className','\x20thn\x20','Tgl\x20Break\x20tidak\x20valid!','2021-05-29','detMemo','menuModal','ctaCompareBtn','innerText'];_0x41c6=function(){return _0xc4e7fa;};return _0x41c6();}window[_0x404bc1(0x1fe)]=()=>document[_0x404bc1(0x1f0)](_0x404bc1(0x182))[_0x404bc1(0x1de)]=new Date()[_0x404bc1(0x1eb)]()[_0x404bc1(0x1c9)]('T')[0x0];
+    </script>
+</body>
+
+</html>
